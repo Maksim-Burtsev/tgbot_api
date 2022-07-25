@@ -5,7 +5,7 @@ from purchases.models import Purchase, MonthlyCosts
 
 @admin.register(Purchase)
 class PurchaseAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'cost', 'date')
 
 
 @admin.register(MonthlyCosts)
