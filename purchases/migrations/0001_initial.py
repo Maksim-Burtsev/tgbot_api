@@ -7,33 +7,48 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='MonthlyCosts',
+            name="MonthlyCosts",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('month', models.PositiveSmallIntegerField()),
-                ('year', models.PositiveSmallIntegerField()),
-                ('total', models.PositiveIntegerField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("month", models.PositiveSmallIntegerField()),
+                ("year", models.PositiveSmallIntegerField()),
+                ("total", models.PositiveIntegerField()),
             ],
             options={
-                'verbose_name_plural': 'MonthlyCosts',
-                'ordering': ['-year', '-month'],
+                "verbose_name_plural": "MonthlyCosts",
+                "ordering": ["-year", "-month"],
             },
         ),
         migrations.CreateModel(
-            name='Purchase',
+            name="Purchase",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('cost', models.PositiveIntegerField()),
-                ('date', models.DateField(db_index=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("cost", models.PositiveIntegerField()),
+                ("date", models.DateField(db_index=True)),
             ],
             options={
-                'ordering': ['-date'],
+                "ordering": ["-date"],
             },
         ),
     ]

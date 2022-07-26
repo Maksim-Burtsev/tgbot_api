@@ -10,8 +10,12 @@ class Purchase(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    def save(self, *args, **kwargs):
+        self.name = self.name.title()
+        return super().save(*args, **kwargs)
+
     class Meta:
-        ordering = ['-date']
+        ordering = ["-date"]
 
 
 class MonthlyCosts(models.Model):
@@ -21,9 +25,8 @@ class MonthlyCosts(models.Model):
     total = models.PositiveIntegerField()
 
     def __str__(self) -> str:
-        return f'{self.month}/{self.year}'
+        return f"{self.month}/{self.year}"
 
     class Meta:
-        ordering = ['-year', '-month']
-        verbose_name_plural = 'MonthlyCosts'
-
+        ordering = ["-year", "-month"]
+        verbose_name_plural = "MonthlyCosts"
