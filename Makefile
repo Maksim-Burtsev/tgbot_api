@@ -9,3 +9,6 @@ test:
 
 req:
 	pip freeze > requirements.txt
+
+shell: 
+	python manage.py shell
