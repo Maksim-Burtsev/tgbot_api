@@ -11,3 +11,12 @@ class PurchasesFilter(filters.FilterSet):
     class Meta:
         model = Purchase
         fields = ("name", "cost")
+
+
+class PurchasesDateFilter(filters.FilterSet):
+    from_date = filters.DateFilter(field_name="date", lookup_expr="gte")
+    to_date = filters.DateFilter(field_name="date", lookup_expr="lte")
+
+    class Meta:
+        model = Purchase
+        fields = ()

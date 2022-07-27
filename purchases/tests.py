@@ -76,6 +76,13 @@ class PurchasesViewTestCase(TestCase):
             [{"id": 1, "name": "Test_Purchase", "cost": 333, "date": "2022-02-22"}],
         )
 
+    def get_purchases_by_cost2(self):
+
+        response = self.client.get("/purchases/?cost=4124932142")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), [])
+
     def test_get_purchase_by_date1(self):
         response = self.client.get(
             "/purchases/?from_date=2022-01-31&to_date=2022-12-22"
