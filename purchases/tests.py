@@ -154,3 +154,72 @@ class PurchasesViewTestCase(TestCase):
             response.json(),
             {"id": 1, "name": "Update Only Name", "cost": 333, "date": "2022-02-22"},
         )
+
+
+class PurchasesListTestCase(TestCase):
+    def setUp(self) -> None:
+        for i in range(10):
+            Purchase.objects.create(
+                name=f"test_purchase {i}", cost=100 * i, date=f"2022-07-{10+i}"
+            )
+        return super().setUp()
+
+    def test_get_without_filters(self):
+
+        response = self.client.get("/get_purchases/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 10)
+
+    def test_get_purchases_with_start_date(self):
+        response = self.client.get("/get_purchases/?from_date=2022-07-17")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 3)
+
+    def test_get_purchases_with_end_date(self):
+        response = self.client.get("/get_purchases/?to_date=2022-07-14")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 5)
+
+    def test_get_purchases_with_dates(self):
+        response = self.client.get(
+            "/get_purchases/?from_date=2022-07-11&to_date=2022-07-14"
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 4)
+
+    def test_get_purchases_with_future_dates(self):
+        response = self.client.get(
+            "/get_purchases/?from_date=2022-12-11&to_date=2022-12-14"
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 0)
+
+    def test_get_purchases_one_date(self):
+
+        Purchase.objects.create(name="something", cost=1234567, date="2022-07-17")
+
+        response = self.client.get(
+            "/get_purchases/?from_date=2022-07-17&to_date=2022-07-17"
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 2)
+
+    def test_get_purchases_count_total(self):
+        for _ in range(10):
+            Purchase.objects.create(name="something", cost=123, date="2022-07-27")
+
+        response = self.client.get(
+            "/get_purchases/?from_date=2022-07-27&to_date=2022-07-27"
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(
+            response.json(), [{"name": "Something", "total": 1230, "count": 10}]
+        )
