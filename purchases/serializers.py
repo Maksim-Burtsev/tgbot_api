@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from purchases.models import Purchase
+from purchases.models import Purchase, MonthlyCosts
 
 
 class PurchaseSerializer(serializers.ModelSerializer):
@@ -16,3 +16,9 @@ class PurchaseWithTotalCount(serializers.ModelSerializer):
     class Meta:
         model = Purchase
         fields = ("name", "total", "count")
+
+
+class MontlyCostsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MonthlyCosts
+        fields = ("month", "year", "total")

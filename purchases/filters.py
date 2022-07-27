@@ -20,3 +20,8 @@ class PurchasesDateFilter(filters.FilterSet):
     class Meta:
         model = Purchase
         fields = ()
+
+
+class MonthYearFilter(filters.FilterSet):
+    month = filters.NumberFilter()
+    year = filters.DateFilter()

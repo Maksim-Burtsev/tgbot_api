@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from purchases.models import Purchase
+from purchases.models import Purchase, MonthlyCosts
 
 
 class PurchasesViewTestCase(TestCase):
@@ -223,3 +223,19 @@ class PurchasesListTestCase(TestCase):
         self.assertEqual(
             response.json(), [{"name": "Something", "total": 1230, "count": 10}]
         )
+
+
+class MonthlyCostsTestCase(TestCase):
+
+    def setUp(self) -> None:
+        for i in range(10):
+            Purchase.objects.create(
+                name=f"test_purchase {i}", cost=100 * i, date=f"2022-07-{10+i}"
+            )
+        return super().setUp()
+
+    def test_model_mothly_costs(self):
+
+        monthly_costs = MonthlyCosts.objects.get(year=2022, month=7)
+        self.assertEqual(monthly_costs.total, 4500)
+        

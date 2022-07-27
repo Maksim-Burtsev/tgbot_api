@@ -1,15 +1,19 @@
 from django.db.models import Sum, Count
 
-from rest_framework import generics, viewsets
-from rest_framework.viewsets import mixins, GenericViewSet
+from rest_framework import views
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework import generics, viewsets
 
 from django_filters import rest_framework as filters
 
-from purchases.models import Purchase
-from purchases.serializers import PurchaseSerializer, PurchaseWithTotalCount
-from purchases.filters import PurchasesFilter, PurchasesDateFilter
+from purchases.models import Purchase, MonthlyCosts
+from purchases.serializers import (
+    PurchaseSerializer,
+    PurchaseWithTotalCount,
+    MontlyCostsSerializer,
+)
+from purchases.filters import PurchasesFilter, PurchasesDateFilter, MonthYearFilter
 
 
 class PurchaseAPIView(viewsets.ModelViewSet):
@@ -50,4 +54,27 @@ class PurchasesListAPIView(generics.ListAPIView):
             Purchase.objects.values("name")
             .annotate(total=Sum("cost"), count=Count("name"))
             .order_by("-total")
+        )
+
+
+class MonthlyCostsView(views.APIView):
+
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = MonthYearFilter
+
+    def get(self, request):
+        month = request.query_params.get("month")
+        year = request.query_params.get("year")
+
+        if month and year:
+            data = MonthlyCosts.objects.filter(month=month, year=year).values()
+            data = data[0] if len(data) > 0 else []
+
+            serializer = MontlyCostsSerializer(data=data)
+            serializer.is_valid()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+        return Response(
+            data={"detail": "month and year - required params"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
