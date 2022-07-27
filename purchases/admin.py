@@ -10,4 +10,7 @@ class PurchaseAdmin(admin.ModelAdmin):
 
 @admin.register(MonthlyCosts)
 class MonthlyCostsAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('get_month_with_year', 'total')
+
+    def get_month_with_year(self, obj):
+        return f"{obj.month}/{obj.year}"
