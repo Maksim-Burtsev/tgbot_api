@@ -1,5 +1,6 @@
 from django.db import models
-from django.db.models import F
+
+from purchases.logic import update_monthly_costs
 
 
 class MonthlyCosts(models.Model):
@@ -15,6 +16,7 @@ class MonthlyCosts(models.Model):
         ordering = ["-year", "-month"]
         verbose_name_plural = "MonthlyCosts"
 
+
 class Purchase(models.Model):
 
     name = models.CharField(max_length=255)
@@ -26,17 +28,12 @@ class Purchase(models.Model):
 
     def save(self, *args, **kwargs):
         self.name = self.name.title()
-        
-        monthly, created = MonthlyCosts.objects.get_or_create(month=self.date.month, year=self.date.year)
-        
-        if created:
-            monthly.total = self.cost
-        else:
-            monthly.total = F('total') + self.cost
+        res = super().save(*args, **kwargs)
 
-        monthly.save()
+        self.refresh_from_db()
+        update_monthly_costs(purchase=self)
 
-        return super().save(*args, **kwargs)
+        return res
 
     class Meta:
         ordering = ["-date"]
