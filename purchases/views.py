@@ -66,7 +66,7 @@ class MonthlyCostsView(views.APIView):
         month = request.query_params.get("month")
         year = request.query_params.get("year")
 
-        if month and year:
+        if month and year and self.validate_month_and_year(month, year):
             data = MonthlyCosts.objects.filter(month=month, year=year).values()
             data = data[0] if len(data) > 0 else []
 
@@ -75,6 +75,14 @@ class MonthlyCostsView(views.APIView):
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
         return Response(
-            data={"detail": "month and year - required params"},
+            data={"detail": "invalid params"},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+    def validate_month_and_year(self, month: str, year: str) -> bool:
+
+        if month.isdigit() and year.isdigit():
+            month, year = int(month), int(year)
+            return  1 <= month <= 12 and 0 < year < 2100
+
+        return False

@@ -226,7 +226,6 @@ class PurchasesListTestCase(TestCase):
 
 
 class MonthlyCostsTestCase(TestCase):
-
     def setUp(self) -> None:
         for i in range(10):
             Purchase.objects.create(
@@ -238,4 +237,25 @@ class MonthlyCostsTestCase(TestCase):
 
         monthly_costs = MonthlyCosts.objects.get(year=2022, month=7)
         self.assertEqual(monthly_costs.total, 4500)
-        
+
+    def test_get_costs_without_params(self):
+        response = self.client.get("/get_monthly_costs/")
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_get_costs_with_one_param(self):
+        response = self.client.get("/get_monthly_costs/?month=7")
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_get_costs_with_correct_params(self):
+        response = self.client.get("/get_monthly_costs/?month=7&year=2022")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"month": 7, "year": 2022, "total": 4500})
+
+    def test_get_costs_with_future_params(self):
+        response = self.client.get("/get_monthly_costs/?month=7&year=2044")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {})
