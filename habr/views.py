@@ -4,9 +4,10 @@ from rest_framework.response import Response
 
 from django_filters import rest_framework as filters
 
-from habr.models import Post
 from habr.parser import Parser
 from habr.filters import PostsFilter
+from habr.serializers import PostSerializer
+from habr.logic import get_unseen_posts
 
 
 class PostListView(views.APIView):
@@ -15,4 +16,12 @@ class PostListView(views.APIView):
     filterset_class = PostsFilter
 
     def get(self, request):
-        return Response([], status=status.HTTP_200_OK)
+        parser = Parser()
+        posts = parser.get_posts()
+        
+        data = get_unseen_posts(posts)
+
+        serializer = PostSerializer(data=data, many=True)
+        serializer.is_valid()
+
+        return Response(data=serializer.data, status=status.HTTP_200_OK)

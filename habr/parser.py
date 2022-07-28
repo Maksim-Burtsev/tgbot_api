@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import TypedDict
 from enum import Enum
 
 import requests
@@ -12,7 +12,7 @@ class URL(Enum):
     TOP_WEEKLY = "https://habr.com/ru/top/weekly/"
 
 
-class PostTuple(NamedTuple):
+class PostDict(TypedDict):
     url: str
     votes: str
     views: str
@@ -43,7 +43,7 @@ class Parser:
 
         return raw_posts_list
 
-    def _get_clean_posts(self, raw_posts) -> list[PostTuple]:
+    def _get_clean_posts(self, raw_posts) -> list[PostDict]:
 
         clean_posts = []
 
@@ -54,14 +54,19 @@ class Parser:
             votes = post.find("span", {"data-test-id": "votes-meter-value"}).text
             views = post.find("span", {"class": "tm-icon-counter__value"}).text
 
-            clean_posts.append(PostTuple(url, votes, views))
+            clean_posts.append(PostDict(url=url, votes=votes,views=views))
 
         return clean_posts
 
-    def get_posts(self, url) -> list[PostTuple]:
+    def get_posts(self, url=URL.ALL_FLOWS.value) -> list[PostDict]:
 
         page = self._get_html_page(url=url)
         raw_posts = self._get_raw_posts_from_page(page)
         clean_posts = self._get_clean_posts(raw_posts)
 
         return clean_posts
+
+
+if __name__ == '__main__':
+    parser = Parser()
+    print(parser.get_posts())
