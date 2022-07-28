@@ -46,7 +46,7 @@ class Parser:
     def _get_clean_posts(self, raw_posts) -> list[PostDict]:
 
         clean_posts = []
-
+        #TODO add try/except block
         for post in raw_posts:
             url = "https://habr.com" + post.find(
                 "a", {"class": "tm-article-snippet__title-link"}
@@ -54,19 +54,27 @@ class Parser:
             votes = post.find("span", {"data-test-id": "votes-meter-value"}).text
             views = post.find("span", {"class": "tm-icon-counter__value"}).text
 
-            clean_posts.append(PostDict(url=url, votes=votes,views=views))
+            clean_posts.append(PostDict(url=url, votes=votes, views=views))
 
         return clean_posts
 
-    def get_posts(self, url=URL.ALL_FLOWS.value) -> list[PostDict]:
+    def _get_url_by_category(self, category: str | None) -> str:
+
+        if category == "top_weekly":
+            url = URL.TOP_WEEKLY.value
+        elif category == "with_rating":
+            url = URL.WITH_RATING.value
+        else:
+            url = URL.ALL_FLOWS.value
+
+        return url
+
+    def get_posts(self, category: str | None = None) -> list[PostDict]:
+
+        url = self._get_url_by_category(category)
 
         page = self._get_html_page(url=url)
         raw_posts = self._get_raw_posts_from_page(page)
         clean_posts = self._get_clean_posts(raw_posts)
 
         return clean_posts
-
-
-if __name__ == '__main__':
-    parser = Parser()
-    print(parser.get_posts())

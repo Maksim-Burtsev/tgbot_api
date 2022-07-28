@@ -16,8 +16,11 @@ class PostListView(views.APIView):
     filterset_class = PostsFilter
 
     def get(self, request):
+
+        category = request.query_params.get('category')
+        
         parser = Parser()
-        posts = parser.get_posts()
+        posts = parser.get_posts(category)
         
         data = get_unseen_posts(posts)
 

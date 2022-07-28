@@ -2,8 +2,8 @@ from habr.models import Post
 from habr.parser import PostDict
 
 
-def get_unseen_posts(posts) -> list[PostDict]:
-    """Return unseen from list of posts; Add them into db (mark as seen)"""
+def get_unseen_posts(posts: list[PostDict | None]) -> list[PostDict | None]:
+    """Return unseen from list of posts. Add them into db (mark as seen)."""
 
     post_urls = [post["url"] for post in posts]
 
