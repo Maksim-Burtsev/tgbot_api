@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_filters',
 
-    'purchases.apps.PurchasesConfig'
+    'purchases.apps.PurchasesConfig',
+    'habr.apps.HabrConfig',
 ]
 
 MIDDLEWARE = [
