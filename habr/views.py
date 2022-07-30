@@ -20,10 +20,13 @@ class PostListView(views.APIView):
         category = request.query_params.get('category')
         
         parser = Parser()
-        posts = parser.get_posts(category)
-        
-        data = get_unseen_posts(posts)
-
+        try:
+            posts = parser.get_posts(category)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            data = get_unseen_posts(posts)
         serializer = PostSerializer(data=data, many=True)
         serializer.is_valid()
 

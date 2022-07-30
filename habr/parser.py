@@ -24,7 +24,6 @@ class Parser:
         self.headers = {"user-agent": fake_useragent.UserAgent().random}
 
     def _get_html_page(self, url: str) -> str:
-
         response = requests.get(url, headers=self.headers)
 
         if response.status_code == 200:
@@ -36,25 +35,30 @@ class Parser:
 
         soup = BeautifulSoup(page, "lxml")
 
-        posts_block = soup.find_all("div", {"class": "tm-articles-list"})[0]
-        raw_posts_list = posts_block.find_all(
-            "article", {"class": "tm-articles-list__item"}
-        )
+        try:
+            posts_block = soup.find_all("div", {"class": "tm-articles-list"})[0]
+            raw_posts_list = posts_block.find_all(
+                "article", {"class": "tm-articles-list__item"}
+            )
+        except Exception as e:
+            print(e)
 
         return raw_posts_list
 
     def _get_clean_posts(self, raw_posts) -> list[PostDict]:
 
         clean_posts = []
-        #TODO add try/except block
         for post in raw_posts:
-            url = "https://habr.com" + post.find(
-                "a", {"class": "tm-article-snippet__title-link"}
-            ).get("href")
-            votes = post.find("span", {"data-test-id": "votes-meter-value"}).text
-            views = post.find("span", {"class": "tm-icon-counter__value"}).text
-
-            clean_posts.append(PostDict(url=url, votes=votes, views=views))
+            try:
+                url = "https://habr.com" + post.find(
+                    "a", {"class": "tm-article-snippet__title-link"}
+                ).get("href")
+                votes = post.find("span", {"data-test-id": "votes-meter-value"}).text
+                views = post.find("span", {"class": "tm-icon-counter__value"}).text
+            except:
+                print(post)
+            else:
+                clean_posts.append(PostDict(url=url, votes=votes, views=views))
 
         return clean_posts
 
