@@ -10,6 +10,8 @@ class Note(models.Model):
     category = models.CharField(max_length=255, null=True, blank=True)
 
     def save(self, *args, **kwargs):
+        self.name = self.name.capitalize()
+        self.category = self.category.lower()
         return super().save(*args, **kwargs)
 
     def __str__(self) -> str:

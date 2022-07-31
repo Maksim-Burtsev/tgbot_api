@@ -9,18 +9,32 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Note',
+            name="Note",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('description', models.TextField(blank=True, null=True)),
-                ('date', models.DateTimeField(default=datetime.datetime(2022, 7, 31, 13, 13, 7, 934357, tzinfo=utc))),
-                ('category', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("description", models.TextField(blank=True, null=True)),
+                (
+                    "date",
+                    models.DateTimeField(
+                        default=datetime.datetime(
+                            2022, 7, 31, 13, 13, 7, 934357, tzinfo=utc
+                        )
+                    ),
+                ),
+                ("category", models.CharField(max_length=255)),
             ],
         ),
     ]
