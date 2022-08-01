@@ -79,7 +79,8 @@ class MonthlyCostsView(views.APIView):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    def validate_month_and_year(self, month: str, year: str) -> bool:
+    @staticmethod
+    def validate_month_and_year(month: str, year: str) -> bool:
 
         if month.isdigit() and year.isdigit():
             month, year = int(month), int(year)

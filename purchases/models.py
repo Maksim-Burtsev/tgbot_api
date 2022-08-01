@@ -27,7 +27,7 @@ class Purchase(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.name = self.name.title()
+        self.name = self.name.capitalize()
         res = super().save(*args, **kwargs)
 
         self.refresh_from_db()

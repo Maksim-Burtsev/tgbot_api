@@ -47,7 +47,7 @@ class PurchasesViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json(),
-            [{"id": 1, "name": "Test_Purchase", "cost": 333, "date": "2022-02-22"}],
+            [{"id": 1, "name": "Test_purchase", "cost": 333, "date": "2022-02-22"}],
         )
 
     def test_get_purchases_by_name(self):
@@ -57,7 +57,7 @@ class PurchasesViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json(),
-            [{"id": 1, "name": "Test_Purchase", "cost": 333, "date": "2022-02-22"}],
+            [{"id": 1, "name": "Test_purchase", "cost": 333, "date": "2022-02-22"}],
         )
 
     def test_get_purchases_by_wrong_name(self):
@@ -73,7 +73,7 @@ class PurchasesViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json(),
-            [{"id": 1, "name": "Test_Purchase", "cost": 333, "date": "2022-02-22"}],
+            [{"id": 1, "name": "Test_purchase", "cost": 333, "date": "2022-02-22"}],
         )
 
     def get_purchases_by_cost2(self):
@@ -91,7 +91,7 @@ class PurchasesViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json(),
-            [{"id": 1, "name": "Test_Purchase", "cost": 333, "date": "2022-02-22"}],
+            [{"id": 1, "name": "Test_purchase", "cost": 333, "date": "2022-02-22"}],
         )
 
     def test_get_purchase_by_date2(self):
@@ -112,7 +112,7 @@ class PurchasesViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json(),
-            {"id": 1, "name": "Test_Purchase", "cost": 333, "date": "2022-02-22"},
+            {"id": 1, "name": "Test_purchase", "cost": 333, "date": "2022-02-22"},
         )
 
     def test_get_purchase_404(self):
@@ -140,7 +140,7 @@ class PurchasesViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json(),
-            {"id": 1, "name": "Updated_Name", "cost": 777, "date": "2023-03-23"},
+            {"id": 1, "name": "Updated_name", "cost": 777, "date": "2023-03-23"},
         )
 
     def test_patch_purchase(self):
@@ -152,7 +152,7 @@ class PurchasesViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json(),
-            {"id": 1, "name": "Update Only Name", "cost": 333, "date": "2022-02-22"},
+            {"id": 1, "name": "Update only name", "cost": 333, "date": "2022-02-22"},
         )
 
 
