@@ -105,21 +105,6 @@ class PurchasesViewTestCase(TestCase):
             [],
         )
 
-    def test_get_purchase(self):
-
-        response = self.client.get("/purchases/1/")
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.json(),
-            {"id": 1, "name": "Test_purchase", "cost": 333, "date": "2022-02-22"},
-        )
-
-    def test_get_purchase_404(self):
-
-        response = self.client.get("/purchases/12345/")
-        self.assertEqual(response.status_code, 404)
-
     def test_delete_purchase(self):
 
         response = self.client.delete("/purchases/1/")

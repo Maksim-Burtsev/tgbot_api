@@ -3,7 +3,8 @@ from django.db.models import Sum, Count
 from rest_framework import views
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework import generics, viewsets
+from rest_framework import generics
+from rest_framework.viewsets import mixins, GenericViewSet
 
 from django_filters import rest_framework as filters
 
@@ -16,7 +17,11 @@ from purchases.serializers import (
 from purchases.filters import PurchasesFilter, PurchasesDateFilter, MonthYearFilter
 
 
-class PurchaseAPIView(viewsets.ModelViewSet):
+class PurchaseAPIView(mixins.CreateModelMixin,
+                   mixins.UpdateModelMixin,
+                   mixins.DestroyModelMixin,
+                   mixins.ListModelMixin,
+                   GenericViewSet):
     """CRUD for Purchases"""
 
     serializer_class = PurchaseSerializer
