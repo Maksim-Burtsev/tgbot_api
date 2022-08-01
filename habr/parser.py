@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import fake_useragent
 
 
-class URL(Enum):
+class URL(str, Enum):
     ALL_FLOWS = "https://habr.com/ru/all/"
     WITH_RATING = "https://habr.com/ru/all/top10/"
     TOP_WEEKLY = "https://habr.com/ru/top/weekly/"
@@ -31,7 +31,7 @@ class Parser:
         else:
             raise Exception("Parsing error")
 
-    def _get_raw_posts_from_page(self, page) -> list[str]:
+    def _get_raw_posts(self, page: str) -> list[str]:
 
         soup = BeautifulSoup(page, "lxml")
 
@@ -45,7 +45,7 @@ class Parser:
 
         return raw_posts_list
 
-    def _get_clean_posts(self, raw_posts) -> list[PostDict]:
+    def _get_clean_posts(self, raw_posts: list[str]) -> list[PostDict]:
 
         clean_posts = []
         for post in raw_posts:
@@ -78,7 +78,7 @@ class Parser:
         url = self._get_url_by_category(category)
 
         page = self._get_html_page(url=url)
-        raw_posts = self._get_raw_posts_from_page(page)
+        raw_posts = self._get_raw_posts(page)
         clean_posts = self._get_clean_posts(raw_posts)
 
         return clean_posts
