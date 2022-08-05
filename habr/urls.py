@@ -5,5 +5,5 @@ from habr.views import PostListView
 
 
 urlpatterns = [
-    path('get_posts/', cache_page(5)(PostListView.as_view()))
+    path('get_posts/', cache_page(5*60)(PostListView.as_view()))
 ]
