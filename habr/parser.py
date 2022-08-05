@@ -2,8 +2,8 @@ from typing import TypedDict
 from enum import Enum
 
 import requests
-from bs4 import BeautifulSoup
 import fake_useragent
+from bs4 import BeautifulSoup
 
 
 class URL(str, Enum):
@@ -18,9 +18,22 @@ class PostDict(TypedDict):
     views: str
 
 
-class Parser:
-    def __init__(self) -> None:
+class ScrapingError(Exception):
+    """Status code of response != 200"""
 
+    pass
+
+
+class ParseDataError(Exception):
+    """Failed of getting data from html-block"""
+
+    pass
+
+
+class Parser:
+    """A class which scraping Habr-posts and parse data from them"""
+
+    def __init__(self) -> None:
         self.headers = {"user-agent": fake_useragent.UserAgent().random}
 
     def _get_html_page(self, url: str) -> str:
@@ -29,9 +42,9 @@ class Parser:
         if response.status_code == 200:
             return response.text
         else:
-            raise Exception("Parsing error")
+            raise ScrapingError("Status code of response != 200")
 
-    def _get_raw_posts(self, page: str) -> list[str]:
+    def _get_raw_posts(self, page: str) -> list[BeautifulSoup]:
 
         soup = BeautifulSoup(page, "lxml")
 
@@ -41,7 +54,7 @@ class Parser:
                 "article", {"class": "tm-articles-list__item"}
             )
         except Exception as e:
-            print(e)
+            raise ParseDataError(e)
 
         return raw_posts_list
 
@@ -56,6 +69,7 @@ class Parser:
                 votes = post.find("span", {"data-test-id": "votes-meter-value"}).text
                 views = post.find("span", {"class": "tm-icon-counter__value"}).text
             except:
+                # TODO logging missed post
                 print(post)
             else:
                 clean_posts.append(PostDict(url=url, votes=votes, views=views))
@@ -74,6 +88,7 @@ class Parser:
         return url
 
     def get_posts(self, category: str | None = None) -> list[PostDict]:
+        """Return list of posts from first Habr-page with getted category. If category is empty the main page is used"""
 
         url = self._get_url_by_category(category)
 
