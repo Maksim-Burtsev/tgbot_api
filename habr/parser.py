@@ -1,9 +1,13 @@
+import logging
 from typing import TypedDict
 from enum import Enum
 
 import requests
 import fake_useragent
 from bs4 import BeautifulSoup
+
+
+logger = logging.getLogger(__name__)
 
 
 class URL(str, Enum):
@@ -42,6 +46,7 @@ class Parser:
         if response.status_code == 200:
             return response.text
         else:
+            logger.warning(f"ScrapingError status_code={response.status_code}")
             raise ScrapingError("Status code of response != 200")
 
     def _get_raw_posts(self, page: str) -> list[BeautifulSoup]:
@@ -68,9 +73,9 @@ class Parser:
                 ).get("href")
                 votes = post.find("span", {"data-test-id": "votes-meter-value"}).text
                 views = post.find("span", {"class": "tm-icon-counter__value"}).text
-            except:
-                # TODO logging missed post
-                print(post)
+            except Exception as e:
+                logger.warning(f"parse posts error: {e}")
+                logger.warning(f"unparsed post: {post}")
             else:
                 clean_posts.append(PostDict(url=url, votes=votes, views=views))
 

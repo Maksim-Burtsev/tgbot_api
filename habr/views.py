@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import views
 from rest_framework import status
 from rest_framework.response import Response
@@ -9,6 +11,9 @@ from habr.parser import ParseDataError, ScrapingError
 from habr.filters import PostsFilter
 from habr.serializers import PostSerializer
 from habr.logic import get_unseen_posts
+
+
+logger = logging.getLogger(__name__)
 
 
 class PostListView(views.APIView):
@@ -24,7 +29,7 @@ class PostListView(views.APIView):
         try:
             posts = parser.get_posts(category)
         except (ScrapingError, ParseDataError) as e:
-            print(e)
+            logger.warning(f"Problem with parser: {e}")
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             data = get_unseen_posts(posts)
