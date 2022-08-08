@@ -1,4 +1,5 @@
 import os
+import datetime
 
 import telebot
 from telebot import types
@@ -8,6 +9,8 @@ from dotenv import load_dotenv
 from services import (
     get_habr_posts,
     send_posts,
+    get_purchases_report,
+    get_current_month_dates
 )
 
 
@@ -33,11 +36,12 @@ def help(message):
     text = """
     Commads:
     posts:
-        
+        /today
         /week
     costs:
-        /daily_costs
-        /del_cost (name) 
+        /daily_purchases
+        /month_purchases
+        /del_purchase (name) 
     notes:
         /note [category] - create note
         /del (pk)
@@ -64,11 +68,18 @@ def main(message):
         posts = get_habr_posts(category="with_rating")
         send_posts(bot, message, posts)
 
-    elif message.text.startswith("/"):
-        pass
+    elif message.text.startswith("/daily_purchases"):
+        date_today = str(datetime.datetime.now().date()) 
+        purchases_list = get_purchases_report(from_date=date_today)
+        for purchase in purchases_list:
+            bot.send_message(message.chat.id, purchase)
 
-    elif message.text.startswith(""):
-        pass
+    elif message.text.startswith("monthly costs"):
+        first_day, last_day = get_current_month_dates()
+        purchases_list = get_purchases_report(first_day, last_day)
+        for purchase in purchases_list:
+            bot.send_message(message.chat.id, purchase)
+
 
     elif message.text.startswith(""):
         pass
