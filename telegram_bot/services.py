@@ -19,6 +19,28 @@ class MonthStartEndDates(NamedTuple):
     end_date: str
 
 
+def get_monthly_costs(month: int, year: int):
+    """Get total costs of this year and month"""
+    response = requests.get(f"{URL}/get_monthly_costs/?month={month}&year={year}")
+    if response.status_code == 200:
+        data = response.json()
+        if data:
+            return f"Total: {response.json()['total']}"
+    return "invalid month or year"
+
+
+def remove_purchase(name: str) -> bool:
+    """Remove purhase by name - get id from GET request and if this purchase exists make DELETE request"""
+    response = requests.get(f"{URL}/purchases/?name={name.title()}")
+    if response.status_code == 200:
+        data = response.json()
+        if data:
+            purchase_id = data[0]["id"]
+            response = requests.delete(f"{URL}/purchases/{purchase_id}/")
+            return True
+    return False
+
+
 def send_purchases(bot: TeleBot, message: Message, purchases_list: list[str]) -> None:
     """Send list of purchases"""
     for purchase in purchases_list:
@@ -82,4 +104,4 @@ def get_purchases_report(from_date: str = "", to_date: str = "") -> list[str]:
 
 
 if __name__ == "__main__":
-    print(get_current_month_dates())
+    get_monthly_costs(8, 2022)

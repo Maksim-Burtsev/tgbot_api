@@ -12,6 +12,8 @@ from services import (
     get_purchases_report,
     get_current_month_dates,
     send_purchases,
+    remove_purchase,
+    get_monthly_costs,
 )
 
 
@@ -41,7 +43,7 @@ def help(message):
         /week
     costs:
         /daily_purchases
-        /month_purchases
+        /month_purchases (month) (year | None)
         /del_purchase (name) 
     notes:
         /note [category] - create note
@@ -59,31 +61,46 @@ def main(message):
 
     if message.text.startswith("/today") and len(message.text) < 10:
         posts = get_habr_posts()
-        send_posts(bot, message, posts)
+        return send_posts(bot, message, posts)
 
     elif message.text.startswith("/week") and len(message.text) < 7:
         posts = get_habr_posts(category="top_weekly")
-        send_posts(bot, message, posts)
+        return send_posts(bot, message, posts)
 
     elif message.text == "> 10 posts":
         posts = get_habr_posts(category="with_rating")
-        send_posts(bot, message, posts)
+        return send_posts(bot, message, posts)
 
     elif message.text.startswith("/daily_purchases"):
         date_today = str(datetime.datetime.now().date())
         purchases_list = get_purchases_report(from_date=date_today)
-        send_purchases(purchases_list)
+        return send_purchases(bot, message, purchases_list)
 
     elif message.text.startswith("monthly costs"):
         first_day, last_day = get_current_month_dates()
         purchases_list = get_purchases_report(first_day, last_day)
-        send_purchases(purchases_list)
+        return send_purchases(bot, message, purchases_list)
 
-    elif message.text.startswith("/del_purchase") and len(message.text.split()) == 2:
-        pass
+    elif message.text.startswith("/del_purchase") and \
+         len(message.text.split()) == 2:
+         
+        res = remove_purchase(name=message.text.split()[1])
+        if res:
+            return bot.send_message(message.chat.id, "success")
+        else:
+            return bot.send_message(message.chat.id, "404")
 
-    elif message.text.startswith(""):
-        pass
+    elif message.text.startswith("/month_purchases") and \
+         len(message.text.split()) in [2,3,]:
+
+        input_data = message.text.split()
+
+        year = datetime.date.today().year if len(input_data) == 2 else input_data[2]
+        month = input_data[1]
+
+        res = get_monthly_costs(month, year)
+
+        return bot.send_message(message.chat.id, res)
 
     elif message.text.startswith(""):
         pass
