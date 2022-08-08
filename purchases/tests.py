@@ -114,32 +114,6 @@ class PurchasesViewTestCase(TestCase):
             Purchase.objects.filter(name="test_purchase", cost=333).exists()
         )
 
-    def test_update_purchase(self):
-
-        data = {"name": "updated_name", "cost": 777, "date": "2023-03-23"}
-
-        response = self.client.put(
-            "/purchases/1/", data=data, content_type="application/json"
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.json(),
-            {"id": 1, "name": "Updated_name", "cost": 777, "date": "2023-03-23"},
-        )
-
-    def test_patch_purchase(self):
-        data = {"name": "update only name"}
-        response = self.client.patch(
-            "/purchases/1/", data=data, content_type="application/json"
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.json(),
-            {"id": 1, "name": "Update only name", "cost": 333, "date": "2022-02-22"},
-        )
-
 
 class PurchasesListTestCase(TestCase):
     def setUp(self) -> None:
