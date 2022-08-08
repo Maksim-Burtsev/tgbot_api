@@ -1,7 +1,6 @@
 import json
 
 from django.test import TestCase
-from django.utils import timezone
 
 from notes.models import Note
 
@@ -34,39 +33,6 @@ class NoteViewTest(TestCase):
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json()["name"], "Post 2")
-
-    def test_update_note(self):
-        data = {"name": "updated name", "date": str(timezone.now())}
-        response = self.client.put(
-            f"/notes/{self.note1.id}/",
-            data=json.dumps(data),
-            content_type="application/json",
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["name"], "Updated name")
-
-    def test_update_note_404(self):
-        data = {"name": "tile", "date": str(timezone.now())}
-        wrong_id = 21412521
-        response = self.client.put(
-            f"/notes/{wrong_id}/",
-            data=json.dumps(data),
-            content_type="application/json",
-        )
-
-        self.assertEqual(response.status_code, 404)
-
-    def test_update_patch_note(self):
-        data = {"name": "patch name"}
-        response = self.client.patch(
-            f"/notes/{self.note1.id}/",
-            data=json.dumps(data),
-            content_type="application/json",
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["name"], "Patch name")
 
     def test_delete_note(self):
         response = self.client.delete(f"/notes/{self.note1.id}/")
