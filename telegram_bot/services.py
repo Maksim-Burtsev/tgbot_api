@@ -19,8 +19,14 @@ class MonthStartEndDates(NamedTuple):
     end_date: str
 
 
-def get_current_month_dates() -> MonthStartEndDates:
+def send_purchases(bot: TeleBot, message: Message, purchases_list: list[str]) -> None:
+    """Send list of purchases"""
+    for purchase in purchases_list:
+        bot.send_message(message.chat.id, purchase)
 
+
+def get_current_month_dates() -> MonthStartEndDates:
+    """Return first and last day (in date format) of current month"""
     today_date = date.today()
     year, month = today_date.year, today_date.month
 
@@ -30,12 +36,14 @@ def get_current_month_dates() -> MonthStartEndDates:
 
 
 def send_posts(bot: TeleBot, message: Message, posts: list[str]) -> None:
+    """Send list of posts"""
     if posts:
         for post in posts:
             bot.send_message(message.chat.id, post)
 
 
 def get_habr_posts(category: str | None = None) -> list[str | None]:
+    """Parse habr posts with this category and return them formatted"""
     response = requests.get(f"{URL}/habr/get_posts/?category={category}")
     if response.status_code == 200:
         data = response.json()
@@ -49,7 +57,7 @@ def get_habr_posts(category: str | None = None) -> list[str | None]:
 
 
 def get_purchases_report(from_date: str = "", to_date: str = "") -> list[str]:
-
+    """Parse purchases list for this period, count total and format every purchase in str"""
     response = requests.get(
         f"{URL}/get_purchases/?from_date={from_date}&to_date={to_date}"
     )

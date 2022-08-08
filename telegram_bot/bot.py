@@ -10,7 +10,8 @@ from services import (
     get_habr_posts,
     send_posts,
     get_purchases_report,
-    get_current_month_dates
+    get_current_month_dates,
+    send_purchases,
 )
 
 
@@ -69,19 +70,16 @@ def main(message):
         send_posts(bot, message, posts)
 
     elif message.text.startswith("/daily_purchases"):
-        date_today = str(datetime.datetime.now().date()) 
+        date_today = str(datetime.datetime.now().date())
         purchases_list = get_purchases_report(from_date=date_today)
-        for purchase in purchases_list:
-            bot.send_message(message.chat.id, purchase)
+        send_purchases(purchases_list)
 
     elif message.text.startswith("monthly costs"):
         first_day, last_day = get_current_month_dates()
         purchases_list = get_purchases_report(first_day, last_day)
-        for purchase in purchases_list:
-            bot.send_message(message.chat.id, purchase)
+        send_purchases(purchases_list)
 
-
-    elif message.text.startswith(""):
+    elif message.text.startswith("/del_purchase") and len(message.text.split()) == 2:
         pass
 
     elif message.text.startswith(""):
