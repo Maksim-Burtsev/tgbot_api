@@ -9,11 +9,10 @@ from notes.filters import NoteFilter
 
 
 class NoteViewSet(mixins.CreateModelMixin,
-                   mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
                    mixins.ListModelMixin,
                    GenericViewSet):
-    """CRUD for Notes"""
+    """CRD for Notes"""
 
     serializer_class = NoteSerializer
     filter_backends = (filters.DjangoFilterBackend,)

@@ -6,5 +6,5 @@ from notes.models import Note
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
-        fields = ('name', 'description', 'date', 'category')
+        fields = ('pk', 'name', 'description', 'date', 'category')
 
