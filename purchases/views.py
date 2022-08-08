@@ -18,11 +18,10 @@ from purchases.filters import PurchasesFilter, PurchasesDateFilter, MonthYearFil
 
 
 class PurchaseAPIView(mixins.CreateModelMixin,
-                   mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
                    mixins.ListModelMixin,
                    GenericViewSet):
-    """CRUD for Purchases"""
+    """CRD for Purchases"""
 
     serializer_class = PurchaseSerializer
     filter_backends = (filters.DjangoFilterBackend,)
