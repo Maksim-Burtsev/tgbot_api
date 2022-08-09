@@ -14,6 +14,7 @@ from services import (
     send_purchases,
     remove_purchase,
     get_monthly_costs,
+    create_note,
 )
 
 
@@ -43,8 +44,8 @@ def help(message):
         /week
     costs:
         /daily_purchases
-        /month_purchases (month) (year | None)
         /del_purchase (name) 
+        /month_purchases (month) (year | None)
     notes:
         /note [category] - create note
         /del (pk)
@@ -56,8 +57,10 @@ def help(message):
 @bot.message_handler(content_types="text")
 def main(message):
 
-    if message.chat.id != MY_ID:
-        return bot.send_message(message.chat.id, "forbidden")
+    chat_id = message.chat.id
+
+    if chat_id != MY_ID:
+        return bot.send_message(chat_id, "forbidden")
 
     if message.text.startswith("/today") and len(message.text) < 10:
         posts = get_habr_posts()
@@ -81,17 +84,18 @@ def main(message):
         purchases_list = get_purchases_report(first_day, last_day)
         return send_purchases(bot, message, purchases_list)
 
-    elif message.text.startswith("/del_purchase") and \
-         len(message.text.split()) == 2:
-         
+    elif message.text.startswith("/del_purchase") and len(message.text.split()) == 2:
+
         res = remove_purchase(name=message.text.split()[1])
         if res:
-            return bot.send_message(message.chat.id, "success")
+            return bot.send_message(chat_id, "success")
         else:
-            return bot.send_message(message.chat.id, "404")
+            return bot.send_message(chat_id, "404")
 
-    elif message.text.startswith("/month_purchases") and \
-         len(message.text.split()) in [2,3,]:
+    elif (
+        message.text.startswith("/month_purchases")
+        and 2 <= len(message.text.split()) <= 3
+    ):
 
         input_data = message.text.split()
 
@@ -100,10 +104,24 @@ def main(message):
 
         res = get_monthly_costs(month, year)
 
-        return bot.send_message(message.chat.id, res)
+        return bot.send_message(chat_id, res)
 
-    elif message.text.startswith(""):
-        pass
+    elif message.text == "/note":
+        text = """structure of message:\n\n /node (category | None)\n name\n description | None"""
+        return bot.send_message(chat_id, text)
+
+    elif message.text.startswith("/note") and len(message.text.split("\n")) >= 2:
+
+        data = message.text.split("\n")
+        category = None if len(data[0].split()) != 2 else data[0].split()[1]
+        name = data[1]
+        description = None if len(data) != 3 else data[2]
+
+        res = create_note(name, category, description)
+
+        response_text = "Success" if res else "Something wrong..."
+
+        bot.send_message(chat_id, response_text)
 
     elif message.text.startswith(""):
         pass

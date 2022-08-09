@@ -1,5 +1,6 @@
 import os
 import calendar
+import datetime
 from datetime import date
 from typing import NamedTuple
 
@@ -19,7 +20,23 @@ class MonthStartEndDates(NamedTuple):
     end_date: str
 
 
-def get_monthly_costs(month: int, year: int):
+def create_note(
+    name: str, category: str | None = None, description: str | None = None
+) -> bool:
+    """Create note with current datetime"""
+    date_today = str(datetime.datetime.now())
+    data = {
+        "name": name,
+        "date": date_today,
+        "category": category,
+        "description": description,
+    }
+    response = requests.post(f"{URL}/notes/", json=data)
+
+    return response.status_code == 201
+
+
+def get_monthly_costs(month: int, year: int) -> str:
     """Get total costs of this year and month"""
     response = requests.get(f"{URL}/get_monthly_costs/?month={month}&year={year}")
     if response.status_code == 200:
@@ -104,4 +121,4 @@ def get_purchases_report(from_date: str = "", to_date: str = "") -> list[str]:
 
 
 if __name__ == "__main__":
-    get_monthly_costs(8, 2022)
+    create_note(name="Test")
