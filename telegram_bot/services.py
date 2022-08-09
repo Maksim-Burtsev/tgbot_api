@@ -10,10 +10,10 @@ from dotenv import load_dotenv
 from telebot import TeleBot
 from telebot.types import Message
 
+from bot import logger
 
 load_dotenv()
 URL = os.getenv("URL")
-
 
 class MonthStartEndDates(NamedTuple):
     start_date: str
@@ -189,3 +189,6 @@ def get_purchases_report(from_date: str = "", to_date: str = "") -> list[str]:
 
         purchases_list.append(f"Total: {total_cost}р.")
         return purchases_list
+
+if __name__ == "__main__":
+    pass

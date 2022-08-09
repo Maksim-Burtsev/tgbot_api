@@ -4,6 +4,7 @@ import datetime
 import telebot
 from telebot import types
 
+from loguru import logger
 from dotenv import load_dotenv
 
 from services import (
@@ -22,6 +23,8 @@ from services import (
 
 
 load_dotenv()
+
+logger.add("logs/debug.log", format="{time} {level} {name} {message}", level="DEBUG", rotation="5 MB")
 
 MY_ID = int(os.getenv("MY_ID"))
 TOKEN = os.getenv("BOT_TOKEN")
@@ -145,5 +148,5 @@ def main(message):
 
         return bot.send_message(chat_id, "cost must be digit")
 
-
-bot.infinity_polling()
+if __name__ == "__main__":
+    bot.infinity_polling()
