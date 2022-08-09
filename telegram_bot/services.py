@@ -20,6 +20,19 @@ class MonthStartEndDates(NamedTuple):
     end_date: str
 
 
+def create_purchases(raw_purchases: list[str]) -> bool:
+    """Create json with purchases and make POST request"""
+    today_date = str(date.today())
+    purchases_list = []
+
+    for i in range(0, len(raw_purchases), 2):
+        purchases_list.append(
+            {"name": raw_purchases[i], "cost": raw_purchases[i + 1], "date": today_date}
+        )
+    response = requests.post(f"{URL}/purchases/", json=purchases_list)
+    return response.status_code == 201
+
+
 def get_notes(query: str) -> list[str | None]:
     """Return list of formatted notes on this query"""
     raw_notes = _get_notes(category=query)
@@ -176,7 +189,3 @@ def get_purchases_report(from_date: str = "", to_date: str = "") -> list[str]:
 
         purchases_list.append(f"Total: {total_cost}р.")
         return purchases_list
-
-
-if __name__ == "__main__":
-    print(get_notes("beast")[0])

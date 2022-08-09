@@ -17,6 +17,7 @@ from services import (
     create_note,
     delete_notes,
     get_notes,
+    create_purchases,
 )
 
 
@@ -121,12 +122,12 @@ def main(message):
         res = create_note(name, category, description)
 
         response_text = "Success" if res else "Something wrong..."
-
         bot.send_message(chat_id, response_text)
 
     elif text.startswith("/del_note") and len(text.split()) == 2:
         res = delete_notes(text.split()[1])
-        return "Succes" if res else "Something wrong..."
+        response_text = "Succes" if res else "Something wrong..."
+        return bot.send_message(chat_id, response_text)
 
     elif text.startswith("/get_notes") and len(text.split()) == 2:
         notes = get_notes(text.split()[1])
@@ -134,9 +135,15 @@ def main(message):
             for note in notes:
                 bot.send_message(chat_id, note)
 
-    else:
-        # TODO try to add cost
-        pass
+    elif len(text.split()) % 2 == 0:
+        raw_purchases = text.split()
+
+        if all([price.isdigit() for price in raw_purchases[1::2]]):
+            res = create_purchases(raw_purchases)
+            response_text = "Succes" if res else "Opppppsss..."
+            return bot.send_message(chat_id, response_text)
+
+        return bot.send_message(chat_id, "cost must be digit")
 
 
 bot.infinity_polling()
