@@ -37,7 +37,7 @@ def start(message):
 
 
 @bot.message_handler(commands=["help"])
-def help(message):
+def help_(message):
     text = """
     Commads:
     posts:

@@ -22,34 +22,29 @@ class MonthStartEndDates(NamedTuple):
 
 def delete_notes(query: str) -> bool:
     """Delete notes with query. First GET pk of notes with name and category, which contains query. Second is DELETE them"""
-    notes_with_name = _get_notes_pk(name=query)
-    notes_with_category = _get_notes_pk(category=query)
+    with_name = [note["pk"] for note in _get_notes(name=query) if note]
+    with_category = [note["pk"] for note in _get_notes(category=query) if note]
 
-    notes_for_delete = set(notes_with_name + notes_with_category)
+    pk_notes_for_delete = set(with_name + with_category)
 
-    if notes_for_delete:
-        for pk in notes_for_delete:
+    if pk_notes_for_delete:
+        for pk in pk_notes_for_delete:
             requests.delete(f"{URL}/notes/{pk}/")
         return True
     return False
 
 
-def _get_notes_pk(
+def _get_notes(
     name: str | None = None, category: str | None = None
 ) -> list[int | None]:
-    """GET notes with name | category and return list of their pk"""
-    if not name and not category: return []
-
+    """GET notes with name | category"""
     if name:
         response = requests.get(f"{URL}/notes/?name={name.title()}")
-
     elif category:
         response = requests.get(f"{URL}/notes/?category={category.lower()}")
 
-    if response.status_code == 200 and response.json():
-        pk_list = [note["pk"] for note in response.json()]
-        return pk_list
-
+    if response.status_code == 200:
+        return response.json()
     return []
 
 
