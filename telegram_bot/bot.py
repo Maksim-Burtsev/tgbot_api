@@ -16,6 +16,7 @@ from services import (
     get_monthly_costs,
     create_note,
     delete_notes,
+    get_notes,
 )
 
 
@@ -30,7 +31,7 @@ bot = telebot.TeleBot(TOKEN)
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("monthly costs")
-    item2 = types.KeyboardButton("> 10 posts")
+    item2 = types.KeyboardButton("daily posts")
     markup.add(item1)
     markup.add(item2)
     bot.send_message(message.chat.id, "hi", reply_markup=markup)
@@ -41,13 +42,14 @@ def help_(message):
     text = """
     Commads:
     posts:
-        /today
+        /rating
         /week
     costs:
         /daily_purchases
         /del_purchase (name) 
         /month_purchases (month) (year | None)
     notes:
+        /note - structure of creating note
         /note [category] - create note
         /del_note (pk)
         /get_notes [category | name | None]
@@ -64,7 +66,7 @@ def main(message):
     if chat_id != MY_ID:
         return bot.send_message(chat_id, "forbidden")
 
-    if text.startswith("/today") and len(text) < 10:
+    if text == ("daily posts"):
         posts = get_habr_posts()
         return send_posts(bot, message, posts)
 
@@ -72,7 +74,7 @@ def main(message):
         posts = get_habr_posts(category="top_weekly")
         return send_posts(bot, message, posts)
 
-    elif text == "> 10 posts":
+    elif text == "/rating" and len(text) < 10:
         posts = get_habr_posts(category="with_rating")
         return send_posts(bot, message, posts)
 
@@ -127,10 +129,10 @@ def main(message):
         return "Succes" if res else "Something wrong..."
 
     elif text.startswith("/get_notes") and len(text.split()) == 2:
-        pass
-
-    elif text.startswith(""):
-        pass
+        notes = get_notes(text.split()[1])
+        if notes:
+            for note in notes:
+                bot.send_message(chat_id, note)
 
     else:
         # TODO try to add cost

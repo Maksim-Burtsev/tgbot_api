@@ -20,6 +20,36 @@ class MonthStartEndDates(NamedTuple):
     end_date: str
 
 
+def get_notes(query: str) -> list[str | None]:
+    """Return list of formatted notes on this query"""
+    raw_notes = _get_notes(category=query)
+    if not raw_notes:
+        raw_notes = _get_notes(name=query)
+
+    notes_list = []
+    for note in raw_notes:
+        note = _format_note(note)
+        notes_list.append(note)
+
+    return notes_list
+
+
+def _format_note(note: dict) -> str:
+    """Format note dict into a str"""
+    res = note["name"]
+
+    if note["description"]:
+        res += f"\n{note['description']}"
+
+    if note["category"]:
+        res += f"\n\n{note['category']}"
+
+    if note["date"]:
+        res += f", {note['date'][:10]}"
+
+    return res
+
+
 def delete_notes(query: str) -> bool:
     """Delete notes with query. First GET pk of notes with name and category, which contains query. Second is DELETE them"""
     with_name = [note["pk"] for note in _get_notes(name=query) if note]
@@ -110,16 +140,16 @@ def send_posts(bot: TeleBot, message: Message, posts: list[str]) -> None:
 
 
 def get_habr_posts(category: str | None = None) -> list[str | None]:
-    """Parse habr posts with this category and return them formatted"""
+    """Parse habr posts with this category and return them formatted (+desc)"""
     response = requests.get(f"{URL}/habr/get_posts/?category={category}")
     if response.status_code == 200:
         data = response.json()
         if data:
             posts_list = [
-                f"views:{post['views']}\nvotes:{post['votes']}\n\n{post['url']}"
+                f"views: {post['views']}\nvotes: {post['votes']}\n\n{post['url']}"
                 for post in data
             ]
-            return posts_list
+            return posts_list[::-1]
     return []
 
 
@@ -149,5 +179,4 @@ def get_purchases_report(from_date: str = "", to_date: str = "") -> list[str]:
 
 
 if __name__ == "__main__":
-    pk = 324235235235235
-    response = requests.delete(f"{URL}/notes/{pk}/")
+    print(get_notes("beast")[0])
