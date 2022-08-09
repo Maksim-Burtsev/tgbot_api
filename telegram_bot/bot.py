@@ -15,6 +15,7 @@ from services import (
     remove_purchase,
     get_monthly_costs,
     create_note,
+    delete_notes,
 )
 
 
@@ -48,7 +49,7 @@ def help(message):
         /month_purchases (month) (year | None)
     notes:
         /note [category] - create note
-        /del (pk)
+        /del_note (pk)
         /get_notes [category | name | None]
     """
     bot.send_message(chat_id=message.chat.id, text=text)
@@ -58,46 +59,44 @@ def help(message):
 def main(message):
 
     chat_id = message.chat.id
+    text = message.text
 
     if chat_id != MY_ID:
         return bot.send_message(chat_id, "forbidden")
 
-    if message.text.startswith("/today") and len(message.text) < 10:
+    if text.startswith("/today") and len(text) < 10:
         posts = get_habr_posts()
         return send_posts(bot, message, posts)
 
-    elif message.text.startswith("/week") and len(message.text) < 7:
+    elif text.startswith("/week") and len(text) < 7:
         posts = get_habr_posts(category="top_weekly")
         return send_posts(bot, message, posts)
 
-    elif message.text == "> 10 posts":
+    elif text == "> 10 posts":
         posts = get_habr_posts(category="with_rating")
         return send_posts(bot, message, posts)
 
-    elif message.text.startswith("/daily_purchases"):
+    elif text.startswith("/daily_purchases"):
         date_today = str(datetime.datetime.now().date())
         purchases_list = get_purchases_report(from_date=date_today)
         return send_purchases(bot, message, purchases_list)
 
-    elif message.text.startswith("monthly costs"):
+    elif text.startswith("monthly costs"):
         first_day, last_day = get_current_month_dates()
         purchases_list = get_purchases_report(first_day, last_day)
         return send_purchases(bot, message, purchases_list)
 
-    elif message.text.startswith("/del_purchase") and len(message.text.split()) == 2:
+    elif text.startswith("/del_purchase") and len(text.split()) == 2:
 
-        res = remove_purchase(name=message.text.split()[1])
+        res = remove_purchase(name=text.split()[1])
         if res:
             return bot.send_message(chat_id, "success")
         else:
             return bot.send_message(chat_id, "404")
 
-    elif (
-        message.text.startswith("/month_purchases")
-        and 2 <= len(message.text.split()) <= 3
-    ):
+    elif text.startswith("/month_purchases") and 2 <= len(text.split()) <= 3:
 
-        input_data = message.text.split()
+        input_data = text.split()
 
         year = datetime.date.today().year if len(input_data) == 2 else input_data[2]
         month = input_data[1]
@@ -106,13 +105,13 @@ def main(message):
 
         return bot.send_message(chat_id, res)
 
-    elif message.text == "/note":
+    elif text == "/note":
         text = """structure of message:\n\n /node (category | None)\n name\n description | None"""
         return bot.send_message(chat_id, text)
 
-    elif message.text.startswith("/note") and len(message.text.split("\n")) >= 2:
+    elif text.startswith("/note") and len(text.split("\n")) >= 2:
 
-        data = message.text.split("\n")
+        data = text.split("\n")
         category = None if len(data[0].split()) != 2 else data[0].split()[1]
         name = data[1]
         description = None if len(data) != 3 else data[2]
@@ -123,13 +122,14 @@ def main(message):
 
         bot.send_message(chat_id, response_text)
 
-    elif message.text.startswith(""):
+    elif text.startswith("/del_note") and len(text.split()) == 2:
+        res = delete_notes(text.split()[1])
+        return "Succes" if res else "Something wrong..."
+
+    elif text.startswith("/get_notes") and len(text.split()) == 2:
         pass
 
-    elif message.text.startswith(""):
-        pass
-
-    elif message.text.startswith(""):
+    elif text.startswith(""):
         pass
 
     else:

@@ -20,6 +20,39 @@ class MonthStartEndDates(NamedTuple):
     end_date: str
 
 
+def delete_notes(query: str) -> bool:
+    """Delete notes with query. First GET pk of notes with name and category, which contains query. Second is DELETE them"""
+    notes_with_name = _get_notes_pk(name=query)
+    notes_with_category = _get_notes_pk(category=query)
+
+    notes_for_delete = set(notes_with_name + notes_with_category)
+
+    if notes_for_delete:
+        for pk in notes_for_delete:
+            requests.delete(f"{URL}/notes/{pk}/")
+        return True
+    return False
+
+
+def _get_notes_pk(
+    name: str | None = None, category: str | None = None
+) -> list[int | None]:
+    """GET notes with name | category and return list of their pk"""
+    if not name and not category: return []
+
+    if name:
+        response = requests.get(f"{URL}/notes/?name={name.title()}")
+
+    elif category:
+        response = requests.get(f"{URL}/notes/?category={category.lower()}")
+
+    if response.status_code == 200 and response.json():
+        pk_list = [note["pk"] for note in response.json()]
+        return pk_list
+
+    return []
+
+
 def create_note(
     name: str, category: str | None = None, description: str | None = None
 ) -> bool:
@@ -121,4 +154,5 @@ def get_purchases_report(from_date: str = "", to_date: str = "") -> list[str]:
 
 
 if __name__ == "__main__":
-    create_note(name="Test")
+    pk = 324235235235235
+    response = requests.delete(f"{URL}/notes/{pk}/")
