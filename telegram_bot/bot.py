@@ -163,7 +163,7 @@ def main(message):
     elif text.startswith("/del_note") and len(text.split()) == 2:
         query = text.split()[1]
         res = delete_notes(query)
-        response_text = "Succes" if res else "Something wrong..."
+        response_text = "Success" if res else "Something wrong..."
 
         logger.debug(f"/del_note with query={query}, res: {response_text}")
         return bot.send_message(chat_id, response_text)
@@ -183,7 +183,7 @@ def main(message):
 
         if all([price.isdigit() for price in raw_purchases[1::2]]):
             res = create_purchases(raw_purchases)
-            response_text = "Succes" if res else "Opppppsss..."
+            response_text = "Success" if res else "Opppppsss..."
 
             logger.debug(f"add purchases {raw_purchases}, result: {response_text}")
             return bot.send_message(chat_id, response_text)
