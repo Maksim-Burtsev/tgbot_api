@@ -5,14 +5,12 @@ from datetime import date
 from typing import NamedTuple, Optional
 
 import requests
-from dotenv import load_dotenv
 
 from telebot import TeleBot
 from telebot.types import Message
 
 
-load_dotenv()
-URL = os.getenv("URL")
+URL = "https://maksimburtsev.pythonanywhere.com/"
 
 
 class MonthStartEndDates(NamedTuple):

@@ -4,8 +4,6 @@ import datetime
 import telebot
 from telebot import types
 
-from dotenv import load_dotenv
-
 from services import (
     get_habr_posts,
     send_posts,
@@ -21,10 +19,9 @@ from services import (
 )
 
 
-load_dotenv()
 
-MY_ID = int(os.getenv("MY_ID"))
-TOKEN = os.getenv("BOT_TOKEN")
+MY_ID = 458294985
+TOKEN = "5043259134:AAGSDHayOt-veEj_0MU5cQTX7ZveqjiT2-8"
 bot = telebot.TeleBot(TOKEN)
 
 

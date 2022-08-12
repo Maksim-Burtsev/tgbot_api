@@ -2,7 +2,6 @@ from typing import TypedDict, Optional
 from enum import Enum
 
 import requests
-import fake_useragent
 from bs4 import BeautifulSoup
 
 
@@ -33,11 +32,9 @@ class ParseDataError(Exception):
 class Parser:
     """A class which scraping Habr-posts and parse data from them"""
 
-    def __init__(self) -> None:
-        self.headers = {"user-agent": fake_useragent.UserAgent().random}
 
     def _get_html_page(self, url: str) -> str:
-        response = requests.get(url, headers=self.headers)
+        response = requests.get(url, headers={"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36"}, proxies={'http':'','https':''}, verify=False)
 
         if response.status_code == 200:
             return response.text

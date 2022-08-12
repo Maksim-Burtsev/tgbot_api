@@ -11,8 +11,6 @@ from habr.serializers import PostSerializer
 from habr.logic import get_unseen_posts
 
 
-
-
 class PostListView(views.APIView):
 
     filter_backends = (filters.DjangoFilterBackend,)
