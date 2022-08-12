@@ -29,9 +29,7 @@ bot = telebot.TeleBot(TOKEN)
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("monthly costs")
-    item2 = types.KeyboardButton("daily posts")
     markup.add(item1)
-    markup.add(item2)
 
     return bot.send_message(message.chat.id, "hi", reply_markup=markup)
 
