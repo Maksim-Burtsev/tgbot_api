@@ -2,7 +2,7 @@ import os
 import calendar
 import datetime
 from datetime import date
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 import requests
 from dotenv import load_dotenv
@@ -33,7 +33,7 @@ def create_purchases(raw_purchases: list[str]) -> bool:
     return response.status_code == 201
 
 
-def get_notes(query: str) -> list[str | None]:
+def get_notes(query: str) -> list[Optional[str]]:
     """Return list of formatted notes on this query"""
     raw_notes = _get_notes(category=query)
     if not raw_notes:
@@ -78,8 +78,8 @@ def delete_notes(query: str) -> bool:
 
 
 def _get_notes(
-    name: str | None = None, category: str | None = None
-) -> list[int | None]:
+    name: Optional[str] = None, category: Optional[str] = None
+) -> list[Optional[int]]:
     """GET notes with name | category"""
     if name:
         response = requests.get(f"{URL}/notes/?name={name.title()}")
@@ -92,7 +92,7 @@ def _get_notes(
 
 
 def create_note(
-    name: str, category: str | None = None, description: str | None = None
+    name: str, category: Optional[str] = None, description: Optional[str] = None
 ) -> bool:
     """Create note with current datetime"""
     date_today = str(datetime.datetime.now())
@@ -152,7 +152,7 @@ def send_posts(bot: TeleBot, message: Message, posts: list[str]) -> None:
             bot.send_message(message.chat.id, post)
 
 
-def get_habr_posts(category: str | None = None) -> list[str | None]:
+def get_habr_posts(category: Optional[str] = None) -> list[Optional[str]]:
     """Parse habr posts with this category and return them formatted (+desc)"""
     response = requests.get(f"{URL}/habr/get_posts/?category={category}")
     if response.status_code == 200:

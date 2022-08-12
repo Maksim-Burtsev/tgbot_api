@@ -1,5 +1,5 @@
 import logging
-from typing import TypedDict
+from typing import TypedDict, Optional
 from enum import Enum
 
 import requests
@@ -81,7 +81,7 @@ class Parser:
 
         return clean_posts
 
-    def _get_url_by_category(self, category: str | None) -> str:
+    def _get_url_by_category(self, category: Optional[str]) -> str:
 
         if category == "top_weekly":
             url = URL.TOP_WEEKLY.value
@@ -92,7 +92,7 @@ class Parser:
 
         return url
 
-    def get_posts(self, category: str | None = None) -> list[PostDict]:
+    def get_posts(self, category: Optional[str] = None) -> list[PostDict]:
         """Return list of posts from first Habr-page with getted category. If category is empty the main page is used"""
 
         url = self._get_url_by_category(category)
