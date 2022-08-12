@@ -40,9 +40,6 @@ def start(message):
 def help_(message):
     text = """
     Commads:
-    posts:
-        /rating
-        /week
     costs:
         /daily_purchases
         /del_purchase (name) 
@@ -65,19 +62,7 @@ def main(message):
     if chat_id != MY_ID:
         return bot.send_message(chat_id, "forbidden")
 
-    if text == ("daily posts"):
-        posts = get_habr_posts()
-        return send_posts(bot, message, posts)
-
-    elif text.startswith("/week") and len(text) < 7:
-        posts = get_habr_posts(category="top_weekly")
-        return send_posts(bot, message, posts)
-
-    elif text == "/rating" and len(text) < 10:
-        posts = get_habr_posts(category="with_rating")
-        return send_posts(bot, message, posts)
-
-    elif text.startswith("/daily_purchases"):
+    if text.startswith("/daily_purchases"):
         date_today = str(datetime.datetime.now().date())
         purchases_list = get_purchases_report(from_date=date_today)
         return send_purchases(bot, message, purchases_list)

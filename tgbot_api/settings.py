@@ -28,7 +28,6 @@ INSTALLED_APPS = [
     "django_filters",
     
     "purchases.apps.PurchasesConfig",
-    "habr.apps.HabrConfig",
     "notes.apps.NotesConfig",
 ]
 
