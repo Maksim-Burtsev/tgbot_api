@@ -19,7 +19,6 @@ from services import (
 )
 
 
-
 MY_ID = 458294985
 TOKEN = "5043259134:AAGSDHayOt-veEj_0MU5cQTX7ZveqjiT2-8"
 bot = telebot.TeleBot(TOKEN)
@@ -29,6 +28,7 @@ bot = telebot.TeleBot(TOKEN)
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("monthly costs")
+    item2 = types.KeyboardButton("daily costs")
     markup.add(item1)
 
     return bot.send_message(message.chat.id, "hi", reply_markup=markup)
@@ -60,7 +60,7 @@ def main(message):
     if chat_id != MY_ID:
         return bot.send_message(chat_id, "forbidden")
 
-    if text.startswith("/daily_purchases"):
+    if text.startswith("/daily_purchases") or text == "daily costs":
         date_today = str(datetime.datetime.now().date())
         purchases_list = get_purchases_report(from_date=date_today)
         return send_purchases(bot, message, purchases_list)
@@ -129,7 +129,6 @@ def main(message):
             return bot.send_message(chat_id, response_text)
 
         return bot.send_message(chat_id, "cost must be digit")
-
 
 
 if __name__ == "__main__":
