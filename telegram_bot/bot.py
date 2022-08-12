@@ -30,6 +30,7 @@ def start(message):
     item1 = types.KeyboardButton("monthly costs")
     item2 = types.KeyboardButton("daily costs")
     markup.add(item1)
+    markup.add(item2)
 
     return bot.send_message(message.chat.id, "hi", reply_markup=markup)
 
