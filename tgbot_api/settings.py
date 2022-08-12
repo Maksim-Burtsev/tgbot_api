@@ -12,37 +12,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "file_formatter": {
-            "format": "{asctime} {levelname} {name} {message}",
-            "style": "{",
-        }
-    },
-    "handlers": {
-        "file": {
-            "level": "WARNING",
-            "class": "logging.handlers.RotatingFileHandler",
-            "formatter": "file_formatter",
-            "maxBytes": 1024 * 1024 * 5,  # 5 MB
-            "backupCount": 5,
-            "filename": os.path.join(BASE_DIR, "logs/log.log"),
-        }
-    },
-    "loggers": {
-        "": {
-            "handlers": [
-                "file",
-            ],
-            "level": "WARNING",
-            "propagate": True,
-        }
-    },
-}
+ALLOWED_HOSTS = ["maksimburtsev.pythonanywhere.com",]
 
 
 INSTALLED_APPS = [
