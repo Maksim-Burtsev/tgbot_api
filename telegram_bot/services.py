@@ -54,11 +54,11 @@ def _format_note(note: dict) -> str:
     if note["description"]:
         res += f"\n{note['description']}"
 
+    note_date = note['date'][:10]
     if note["category"]:
-        res += f"\n\n{note['category']}"
-
-    if note["date"]:
-        res += f", {note['date'][:10]}"
+        res += f"\n\n{note['category']}, {note_date}"
+    else:
+        res += f"\n\n{note_date}"
 
     return res
 
