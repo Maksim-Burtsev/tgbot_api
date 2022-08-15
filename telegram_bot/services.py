@@ -1,4 +1,3 @@
-import os
 import calendar
 import datetime
 from datetime import date
@@ -31,11 +30,14 @@ def create_purchases(raw_purchases: list[str]) -> bool:
     return response.status_code == 201
 
 
-def get_notes(query: str) -> list[Optional[str]]:
+def get_notes(query: str | None) -> list[Optional[str]]:
     """Return list of formatted notes on this query"""
-    raw_notes = _get_notes(category=query)
-    if not raw_notes:
-        raw_notes = _get_notes(name=query)
+    if query:
+        raw_notes = _get_notes(category=query)
+        if not raw_notes:
+            raw_notes = _get_notes(name=query)
+    else:
+        raw_notes = _get_notes()
 
     notes_list = []
     for note in raw_notes:
@@ -83,6 +85,8 @@ def _get_notes(
         response = requests.get(f"{URL}/notes/?name={name.title()}")
     elif category:
         response = requests.get(f"{URL}/notes/?category={category.lower()}")
+    else:
+        response = requests.get(f"{URL}/notes/")
 
     if response.status_code == 200:
         return response.json()

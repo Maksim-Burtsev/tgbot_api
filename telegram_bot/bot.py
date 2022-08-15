@@ -1,12 +1,9 @@
-import os
 import datetime
 
 import telebot
 from telebot import types
 
 from services import (
-    get_habr_posts,
-    send_posts,
     get_purchases_report,
     get_current_month_dates,
     send_purchases,
@@ -44,8 +41,8 @@ def help_(message):
         /del_purchase (name) 
         /month_purchases (month) (year | None)
     notes:
-        /note - structure of creating note
-        /note [category] - create note
+        /note_help - structure of creating note
+        /note - create note
         /del_note (pk)
         /get_notes [category | name | None]
     """
@@ -72,7 +69,6 @@ def main(message):
         return send_purchases(bot, message, purchases_list)
 
     elif text.startswith("/del_purchase") and len(text.split()) == 2:
-
         name = text.split()[1]
         res = remove_purchase(name)
 
@@ -82,7 +78,6 @@ def main(message):
             return bot.send_message(chat_id, "404")
 
     elif text.startswith("/month_purchases") and 2 <= len(text.split()) <= 3:
-
         input_data = text.split()
 
         year = datetime.date.today().year if len(input_data) == 2 else input_data[2]
@@ -91,14 +86,13 @@ def main(message):
         res = get_monthly_costs(month, year)
         return bot.send_message(chat_id, res)
 
-    elif text == "/note":
-        text = """structure of message:\n\n /node (category | None)\n name\n description | None"""
+    elif text == "/note_help":
+        text = """structure of message:\n\n /node [category | None]\n name\n description | None"""
         return bot.send_message(chat_id, text)
 
     elif text.startswith("/note") and len(text.split("\n")) >= 2:
-
         data = text.split("\n")
-        category = None if len(data[0].split()) != 2 else data[0].split()[1]
+        category = None if len(data[0].split()) < 2 else " ".join(data[0].split()[1:])
         name = data[1]
         description = None if len(data) != 3 else data[2]
 
@@ -113,10 +107,11 @@ def main(message):
         response_text = "Success" if res else "Something wrong..."
         return bot.send_message(chat_id, response_text)
 
-    elif text.startswith("/get_notes") and len(text.split()) == 2:
-        query = text.split()[1]
+    elif text.startswith("/get_notes"):
+        splited_text = text.split()
+        query = " ".join(splited_text[1:]) if splited_text[1:] else None
+        
         notes = get_notes(query)
-
         if notes:
             for note in notes:
                 bot.send_message(chat_id, note)
