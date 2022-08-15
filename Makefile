@@ -12,3 +12,6 @@ req:
 
 shell: 
 	python manage.py shell
+
+bot:
+	python telegram_bot/bot
