@@ -30,7 +30,7 @@ def create_purchases(raw_purchases: list[str]) -> bool:
     return response.status_code == 201
 
 
-def get_notes(query: str | None) -> list[Optional[str]]:
+def get_notes(query: Optional[str]) -> list[Optional[str]]:
     """Return list of formatted notes on this query"""
     if query:
         raw_notes = _get_notes(category=query)
