@@ -1,7 +1,7 @@
 import calendar
 import datetime
 from datetime import date
-from typing import NamedTuple, Optional
+from typing import NamedTuple, Optional, List, TypedDict, Union
 
 import requests
 
@@ -12,12 +12,20 @@ from telebot.types import Message
 URL = "https://maksimburtsev.pythonanywhere.com/"
 
 
+class NoteDict(TypedDict):
+    pk: int
+    name: str
+    description: Optional[str]
+    date: str
+    category: Optional[str]
+
+
 class MonthStartEndDates(NamedTuple):
     start_date: str
     end_date: str
 
 
-def create_purchases(raw_purchases: list[str]) -> bool:
+def create_purchases(raw_purchases: List[str]) -> bool:
     """Create json with purchases and make POST request"""
     today_date = str(date.today())
     purchases_list = []
@@ -30,7 +38,7 @@ def create_purchases(raw_purchases: list[str]) -> bool:
     return response.status_code == 201
 
 
-def get_notes(query: Optional[str]) -> list[Optional[str]]:
+def get_notes(query: Optional[str]) -> List[Optional[str]]:
     """Return list of formatted notes on this query"""
     if query:
         raw_notes = _get_notes(category=query)
@@ -47,14 +55,14 @@ def get_notes(query: Optional[str]) -> list[Optional[str]]:
     return notes_list
 
 
-def _format_note(note: dict) -> str:
+def _format_note(note: NoteDict) -> str:
     """Format note dict into a str"""
     res = note["name"]
 
     if note["description"]:
         res += f"\n{note['description']}"
 
-    note_date = note['date'][:10]
+    note_date = note["date"][:10]
     if note["category"]:
         res += f"\n\n{note['category']}, {note_date}"
     else:
@@ -65,6 +73,8 @@ def _format_note(note: dict) -> str:
 
 def delete_notes(query: str) -> bool:
     """Delete notes with query. First GET pk of notes with name and category, which contains query. Second is DELETE them"""
+    if not query: return False
+
     with_name = [note["pk"] for note in _get_notes(name=query) if note]
     with_category = [note["pk"] for note in _get_notes(category=query) if note]
 
@@ -79,8 +89,8 @@ def delete_notes(query: str) -> bool:
 
 def _get_notes(
     name: Optional[str] = None, category: Optional[str] = None
-) -> list[Optional[int]]:
-    """GET notes with name | category"""
+) -> Union[NoteDict, dict]:
+    """GET notes with name | category. If both empty return all notes from database"""
     if name:
         response = requests.get(f"{URL}/notes/?name={name.title()}")
     elif category:
@@ -131,10 +141,14 @@ def remove_purchase(name: str) -> bool:
     return False
 
 
-def send_purchases(bot: TeleBot, message: Message, purchases_list: list[str]) -> None:
+def send_purchases(bot: TeleBot, message: Message, purchases_list: List[str]) -> None:
     """Send list of purchases"""
-    for purchase in purchases_list:
-        bot.send_message(message.chat.id, purchase)
+    if purchases_list:
+        for purchase in purchases_list:
+            bot.send_message(message.chat.id, purchase)
+        return
+    else:
+        return bot.send_message(message.chat.id, "purchasts list is empty")
 
 
 def get_current_month_dates() -> MonthStartEndDates:
@@ -147,28 +161,7 @@ def get_current_month_dates() -> MonthStartEndDates:
     return MonthStartEndDates(f"{year}-{month}-01", f"{year}-{month}-{last_day}")
 
 
-def send_posts(bot: TeleBot, message: Message, posts: list[str]) -> None:
-    """Send list of posts"""
-    if posts:
-        for post in posts:
-            bot.send_message(message.chat.id, post)
-
-
-def get_habr_posts(category: Optional[str] = None) -> list[Optional[str]]:
-    """Parse habr posts with this category and return them formatted (+desc)"""
-    response = requests.get(f"{URL}/habr/get_posts/?category={category}")
-    if response.status_code == 200:
-        data = response.json()
-        if data:
-            posts_list = [
-                f"views: {post['views']}\nvotes: {post['votes']}\n\n{post['url']}"
-                for post in data
-            ]
-            return posts_list[::-1]
-    return []
-
-
-def get_purchases_report(from_date: str = "", to_date: str = "") -> list[str]:
+def get_purchases_report(from_date: str = "", to_date: str = "") -> List[str]:
     """Parse purchases list for this period, count total and format every purchase in str"""
     response = requests.get(
         f"{URL}/get_purchases/?from_date={from_date}&to_date={to_date}"
@@ -191,3 +184,7 @@ def get_purchases_report(from_date: str = "", to_date: str = "") -> list[str]:
 
         purchases_list.append(f"Total: {total_cost}р.")
         return purchases_list
+    return []
+
+if __name__ == "__main__":
+    print(_get_notes())
