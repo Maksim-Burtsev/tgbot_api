@@ -4,21 +4,17 @@ import telebot
 from telebot import types
 
 from services import (
-    get_purchases_report,
+    Purchase,
+    Note,
     get_current_month_dates,
     send_purchases,
-    remove_purchase,
-    get_monthly_costs,
-    create_note,
-    delete_notes,
-    get_notes,
-    create_purchases,
 )
 
 
 MY_ID = 458294985
 TOKEN = "5043259134:AAGSDHayOt-veEj_0MU5cQTX7ZveqjiT2-8"
 bot = telebot.TeleBot(TOKEN)
+note_worker = Note()
 
 
 @bot.message_handler(commands=["start"])
@@ -60,17 +56,17 @@ def main(message):
 
     if text.startswith("/daily_purchases") or text == "daily costs":
         date_today = str(datetime.datetime.now().date())
-        purchases_list = get_purchases_report(from_date=date_today)
+        purchases_list = Purchase.get_purchases_report(from_date=date_today)
         return send_purchases(bot, message, purchases_list)
 
     elif text.startswith("monthly costs"):
         first_day, last_day = get_current_month_dates()
-        purchases_list = get_purchases_report(first_day, last_day)
+        purchases_list = Purchase.get_purchases_report(first_day, last_day)
         return send_purchases(bot, message, purchases_list)
 
     elif text.startswith("/del_purchase") and len(text.split()) == 2:
         name = text.split()[1]
-        res = remove_purchase(name)
+        res = Purchase.remove_purchase(name)
 
         if res:
             return bot.send_message(chat_id, "success")
@@ -83,7 +79,7 @@ def main(message):
         year = datetime.date.today().year if len(input_data) == 2 else input_data[2]
         month = input_data[1]
 
-        res = get_monthly_costs(month, year)
+        res = Purchase.get_monthly_costs(month, year)
         return bot.send_message(chat_id, res)
 
     elif text == "/note_help":
@@ -96,22 +92,22 @@ def main(message):
         name = data[1]
         description = None if len(data) != 3 else data[2]
 
-        res = create_note(name, category, description)
+        res = note_worker.create_note(name, category, description)
 
         response_text = "Success" if res else "Something wrong..."
         return bot.send_message(chat_id, response_text)
 
     elif text.startswith("/del_note") and len(text.split()) == 2:
         query = text.split()[1]
-        res = delete_notes(query)
+        res = note_worker.delete_notes(query)
         response_text = "Success" if res else "Something wrong..."
         return bot.send_message(chat_id, response_text)
 
     elif text.startswith("/get_notes"):
         splited_text = text.split()
         query = " ".join(splited_text[1:]) if splited_text[1:] else None
-        
-        notes = get_notes(query)
+
+        notes = note_worker.get_notes(query)
         if notes:
             for note in notes:
                 bot.send_message(chat_id, note)
@@ -120,7 +116,7 @@ def main(message):
         raw_purchases = text.split()
 
         if all([price.isdigit() for price in raw_purchases[1::2]]):
-            res = create_purchases(raw_purchases)
+            res = Purchase.create_purchases(raw_purchases)
             response_text = "Success" if res else "Opppppsss..."
             return bot.send_message(chat_id, response_text)
 
