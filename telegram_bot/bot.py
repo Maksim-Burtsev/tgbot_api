@@ -54,12 +54,13 @@ def main(message):
     if chat_id != MY_ID:
         return bot.send_message(chat_id, "forbidden")
 
-    if text.startswith("/daily_purchases") or text == "daily costs":
+
+    if text in ["/daily_purchases", "daily costs", "/daily_costs"]:
         date_today = str(datetime.datetime.now().date())
         purchases_list = Purchase.get_purchases_report(from_date=date_today)
         return send_purchases(bot, message, purchases_list)
 
-    elif text.startswith("monthly costs"):
+    elif text.startswith("monthly costs") or text == "/monthly_costs":
         first_day, last_day = get_current_month_dates()
         purchases_list = Purchase.get_purchases_report(first_day, last_day)
         return send_purchases(bot, message, purchases_list)
