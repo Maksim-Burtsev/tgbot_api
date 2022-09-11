@@ -12,7 +12,7 @@ from services import (
 
 
 MY_ID = 458294985
-TOKEN = "5043259134:AAGSDHayOt-veEj_0MU5cQTX7ZveqjiT2-8"
+TOKEN = "5344421271:AAHNQluMJLVp4t7TNzQ3uVrBtmVJQPIonIQ"
 bot = telebot.TeleBot(TOKEN)
 note_worker = Note()
 
@@ -47,13 +47,11 @@ def help_(message):
 
 @bot.message_handler(content_types="text")
 def main(message):
-
     chat_id = message.chat.id
     text = message.text
 
     if chat_id != MY_ID:
         return bot.send_message(chat_id, "forbidden")
-
 
     if text in ["/daily_purchases", "daily costs", "/daily_costs"]:
         date_today = str(datetime.datetime.now().date())
@@ -69,10 +67,10 @@ def main(message):
         name = text.split()[1]
         res = Purchase.remove_purchase(name)
 
-        if res:
-            return bot.send_message(chat_id, "success")
-        else:
+        if not res:
             return bot.send_message(chat_id, "404")
+
+        return bot.send_message(chat_id, "success")
 
     elif text.startswith("/month_purchases") and 2 <= len(text.split()) <= 3:
         input_data = text.split()
@@ -84,7 +82,7 @@ def main(message):
         return bot.send_message(chat_id, res)
 
     elif text == "/note_help":
-        text = """structure of message:\n\n /node [category | None]\n name\n description | None"""
+        text = """structure of message:\n\n /note [category | None]\n name\n description | None"""
         return bot.send_message(chat_id, text)
 
     elif text.startswith("/note") and len(text.split("\n")) >= 2:
